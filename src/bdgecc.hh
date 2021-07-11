@@ -1,3 +1,4 @@
 #include <igraph/igraph.h>
+#include <vector>
 
-int bdgecc(igraph_t V);
+std::vector<int> bdgecc(igraph_t V);
