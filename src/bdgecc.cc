@@ -65,7 +65,7 @@ int selectFromCommunities(igraph_t* V, igraph_vector_t* membership, igraph_integ
     std::vector<long int> commuSizes(*nb_cluster, 0);
     std::vector<long int> commuDelegate(*nb_cluster, -1);
 
-    for (long int i = 0; i < igraph_vcount(V); i++){ //DEBUG Maybe error on indexes
+    for (long int i = 0; i < igraph_vcount(V); i++){
 	commuSizes[VECTOR(*membership)[i]] += 1;
 	if (commuDelegate[VECTOR(*membership)[i]] == -1){
 	    if (candidate[i] == 1)
@@ -95,7 +95,7 @@ int selectFromCommunities_cycle(igraph_t* V, igraph_vector_t* membership, igraph
     std::vector<long int> commuSizes(*nb_cluster, 0);
     std::vector<long int> commuDelegate(*nb_cluster, -1);
 
-    for (long int i = 0; i < igraph_vcount(V); i++){ //DEBUG Maybe error on indexes
+    for (long int i = 0; i < igraph_vcount(V); i++){
 	if (candidate[i] == 1){
 	    commuSizes[VECTOR(*membership)[i]] += 1;
 	    if (commuDelegate[VECTOR(*membership)[i]] == -1)
@@ -114,7 +114,19 @@ int selectFromCommunities_cycle(igraph_t* V, igraph_vector_t* membership, igraph
     return commuDelegate[*commuIndex];
 }
 
-int selectFrom(igraph_t V, int v_id, int maxuppernode, int minlowernode, std::vector<int> candidate, bool high, bool biggest, igraph_vector_t* membership, igraph_integer_t* nb_cluster, int* commuIndex){ 
+int selectFromCommunitiesCycleOnce(std::vector<std::pair<long int, long int>> delegate, int* commuIndex, int* nb_cluster){
+    if (*commuIndex > *nb_cluster)
+        return -1;
+    else{
+    	auto res = delegate[*commuIndex].first;
+	*commuIndex += 1;
+	return res;
+    }
+        
+}
+
+
+int selectFrom(igraph_t V, int v_id, int maxuppernode, int minlowernode, std::vector<int> candidate, bool high, bool biggest, igraph_vector_t* membership, igraph_integer_t* nb_cluster, int* commuIndex, std::vector<std::pair<long int, long int>> delegate){ 
     int res_id = 0;
     if(v_id == -1) { // only in the first round, select node with highest degree
 	auto res_neigh = -1;
@@ -138,10 +150,10 @@ int selectFrom(igraph_t V, int v_id, int maxuppernode, int minlowernode, std::ve
 	 return res_id;
     }
     else{
-        res_id = selectFromCommunities(&V, membership, nb_cluster, biggest, candidate);	
-	*commuIndex += 1;
-	if (*commuIndex >= *nb_cluster)
-	    *commuIndex = 0;
+        res_id = selectFromCommunitiesCycleOnce(delegate, commuIndex, nb_cluster);	
+//	*commuIndex += 1;
+//	if (*commuIndex >= *nb_cluster)
+//	    *commuIndex = 0;
 	if (res_id == -1){
             if(high) // select node with highest upper bound
                 return maxuppernode;
@@ -200,12 +212,33 @@ std::vector<int> bdgecc(igraph_t V)
     igraph_vector_init(&membership, igraph_vcount(&V));
     igraph_integer_t nb_cluster; //TODO Free 
     computeCommunities(&V, &membership, &nb_cluster);
+    
+    
+    std::vector<std::pair<long int, long int>> delegate(nb_cluster, std::make_pair(-1, -1));
+
+    for(int i = 0; i < igraph_vcount(&V); i++){
+        igraph_vector_t i_neigh;
+	igraph_vector_init(&i_neigh, 1);
+	igraph_neighborhood_size(&V, &i_neigh,
+                             igraph_vss_1(i), 1,
+                             IGRAPH_ALL,
+                             1);
+	auto currentCommu = VECTOR(membership)[i];
+	auto p = delegate[currentCommu];
+	if (VECTOR(i_neigh)[0] > p.second){
+	    delegate[currentCommu] = std::make_pair(i, VECTOR(i_neigh)[0]);
+	}
+
+	//TODO free
+
+	
+    }
     //TODO Prune here 
     while(candidates > 0)
     {
 	high = !high;
 	biggest = !biggest;
-        v_id = selectFrom(V, v_id, maxuppernode, minlowernode, candidate, high, biggest, &membership, &nb_cluster, &commuIndex);
+        v_id = selectFrom(V, v_id, maxuppernode, minlowernode, candidate, high, biggest, &membership, &nb_cluster, &commuIndex, delegate);
 	maxuppernode = -1;
 	minlowernode = -1;
 	

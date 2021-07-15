@@ -29,7 +29,6 @@ int main()
     file = fopen ("../email-Enron.txt" , "r");
 
     igraph_t graph;
-    std::cout << "FF14 C est de la merde wow c est mieux";
 
     igraph_read_graph_edgelist(&graph, file,
                                0, false);
