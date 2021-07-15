@@ -6,49 +6,38 @@
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
+#include <experimental/string_view>
 
-int main()
+int main(int argc, char *argv[])
 {
-    igraph_t g;
-    igraph_vector_t v1;
-
     /* simple use */
-    igraph_vector_init(&v1, 10);
-    VECTOR(v1)[0] = 0;
-    VECTOR(v1)[1] = 1;
-    VECTOR(v1)[2] = 1;
-    VECTOR(v1)[3] = 2;
-    VECTOR(v1)[4] = 2;
-    VECTOR(v1)[5] = 3;
-    VECTOR(v1)[6] = 2;
-    VECTOR(v1)[7] = 2;
-    VECTOR(v1)[8] = 2;
-
+    int indexFile = 1;
+    if (argc == 1){
+        std::cerr << "This programm needs a file\n";
+	return -1;
+    }
+    
     FILE *file;
+    bool print_ecc = false;
+    if (std::experimental::string_view(argv[1]) == "--print"){
+        print_ecc = true;
+	indexFile++;
+    }
 
-    file = fopen ("../email-Enron.txt" , "r");
+    file = fopen (argv[indexFile] , "r");
 
     igraph_t graph;
 
     igraph_read_graph_edgelist(&graph, file,
                                0, false);
 
-    std::cout << "Graph created";
     fclose(file);
-    igraph_create(&g, &v1, 0, 0);
+    std::cout << "Graph created \n";
     std::vector<int> eccs = bdgecc(graph);
-    for (auto& i: eccs)
-        std::cout << i << ' ';
-    igraph_vector_destroy(&v1);
-    std::cout << '\n' << "Calculated :" << *max_element(eccs.begin(), eccs.end());
-    igraph_real_t res;
-
-    igraph_diameter(&graph, &res,
-                    NULL, NULL,
-                    NULL,
-                    false, true);
-    std::cout << '\n' << "Ground truth: " << res;
-
-    igraph_destroy(&g);
-    igraph_destroy(&graph);
+    if (print_ecc){
+	std::cout << "List of eccentricities:\n";
+        for (auto& i: eccs)
+            std::cout << i << ' ';
+    }
+    return 0;
  }

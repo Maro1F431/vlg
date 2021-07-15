@@ -1,7 +1,7 @@
 all:
-	 g++ -fpic -g3 -I/usr/local/igraph -L/usr/local/lib -ligraph main.cc bdgecc.cc
+	 g++ -fpic -O3 -I/usr/local/igraph -L/usr/local/lib -ligraph main.cc bdgecc.cc -o bound_ecc
 
-Optimized:
-	 g++ -fpic -O3 -I/usr/local/igraph -L/usr/local/lib -ligraph main.cc bdgecc.cc
+debug:
+	 g++ -fpic -g3 -I/usr/local/igraph -L/usr/local/lib -ligraph main.cc bdgecc.cc -o bound_ecc
 clean:
-	rm ./a.out
+	rm ./bound_ecc
