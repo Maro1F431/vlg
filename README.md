@@ -9,9 +9,9 @@ Paul ADAM
 
 We provide you a simple makefile 
 
--[] If you want to debug the project (use gdb) just type:
-	make debug
--[] If just want to run the project a simple make will suffise
+-[X] If you want to debug the project (use gdb) just type:\
+	*make debug*
+-[X] If just want to run the project a simple *make* will suffise
 
 We also provide a make clean in order to erase the executable file
 
@@ -20,7 +20,7 @@ We also provide a make clean in order to erase the executable file
 To use our program you just need a .txt file containing a list of eges,
 if you have doubt the example "facebook_combined.txt" is provided. Here is
 an example of how to use our solution:
-	./a.out path/to/file.txt
+	*./a.out path/to/file.txt*
 
 Furthermore you can use the --print optin to print the eccentricity list as such:
-	./a.out --print path/to/file.txt 
+	*./a.out --print path/to/file.txt* 
