@@ -22,5 +22,5 @@ if you have doubt the example `facebook_combined.txt` is provided. Here is
 an example of how to use our solution:</br>
 -	**./a.out path/to/file.txt**
 
-Furthermore you can use the --print optin to print the eccentricity list as such:\
-	**./a.out --print path/to/file.txt**
+Furthermore you can use the --print option to print the eccentricity list as such:
+-	**./a.out --print path/to/file.txt**
