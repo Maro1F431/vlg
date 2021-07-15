@@ -20,7 +20,7 @@ We also provide a make clean in order to erase the executable file
 To use our program you just need a .txt file containing a list of eges,
 if you have doubt the example `facebook_combined.txt` is provided. Here is
 an example of how to use our solution:</br>
--	**./a.out path/to/file.txt**
+-	**./bound_ecc path/to/file.txt**
 
 Furthermore you can use the --print option to print the eccentricity list as such:
--	**./a.out --print path/to/file.txt**
+-	**./bound_ecc --print path/to/file.txt**
